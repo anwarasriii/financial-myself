@@ -1,0 +1,181 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../app/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum AccountType {
+  CHECKING
+  SAVINGS
+  INVESTMENT
+}
+
+enum BucketKind {
+  DAILY_USE
+  BILLS
+  ENTERTAINMENT
+  EMERGENCY_FUND
+  SINKING_FUND
+  GOAL
+  DEBT
+  OTHER
+}
+
+enum TxnDirection {
+  IN
+  OUT
+}
+
+enum AllocationType {
+  PERCENT
+  FIXED
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String?
+  passwordHash String
+  createdAt    DateTime @default(now())
+
+  accounts        Account[]
+  buckets         Bucket[]
+  recurringBills  RecurringBill[]
+  income          Income[]
+  transactions    Transaction[]
+  allocationRules AllocationRule[]
+  categoryRules   CategoryRule[]
+}
+
+model Account {
+  id          String      @id @default(cuid())
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  name        String
+  institution String
+  type        AccountType
+  currency    String      @default("MYR")
+  createdAt   DateTime    @default(now())
+
+  buckets     Bucket[]
+  transactions Transaction[]
+  snapshots   BalanceSnapshot[]
+}
+
+model Bucket {
+  id           String    @id @default(cuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountId    String
+  account      Account   @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  name         String
+  kind         BucketKind
+  priority     Int       @default(0)
+  targetAmount Float?
+  targetDate   DateTime?
+  createdAt    DateTime  @default(now())
+
+  sinkingFundItems SinkingFundItem[]
+  goals            Goal[]
+  recurringBills   RecurringBill[]
+  transactions     Transaction[]
+  allocationRules  AllocationRule[]
+  categoryRules    CategoryRule[]
+}
+
+model SinkingFundItem {
+  id           String   @id @default(cuid())
+  bucketId     String
+  bucket       Bucket   @relation(fields: [bucketId], references: [id], onDelete: Cascade)
+  name         String
+  annualCost   Float
+  dueMonth     Int
+  currentSaved Float    @default(0)
+  createdAt    DateTime @default(now())
+}
+
+model Goal {
+  id           String    @id @default(cuid())
+  bucketId     String
+  bucket       Bucket    @relation(fields: [bucketId], references: [id], onDelete: Cascade)
+  name         String
+  targetAmount Float
+  targetDate   DateTime?
+  currentAmount Float    @default(0)
+  rank         Int       @default(0)
+  createdAt    DateTime  @default(now())
+}
+
+model RecurringBill {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bucketId  String
+  bucket    Bucket   @relation(fields: [bucketId], references: [id], onDelete: Cascade)
+  name      String
+  amount    Float
+  dueDay    Int
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model Income {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date      DateTime
+  amount    Float
+  source    String
+  createdAt DateTime @default(now())
+}
+
+model Transaction {
+  id        String       @id @default(cuid())
+  userId    String
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accountId String
+  account   Account      @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  bucketId  String?
+  bucket    Bucket?      @relation(fields: [bucketId], references: [id], onDelete: SetNull)
+  date      DateTime
+  amount    Float
+  direction TxnDirection
+  category  String?
+  note      String?
+  createdAt DateTime     @default(now())
+}
+
+model AllocationRule {
+  id            String         @id @default(cuid())
+  userId        String
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bucketId      String
+  bucket        Bucket         @relation(fields: [bucketId], references: [id], onDelete: Cascade)
+  type          AllocationType
+  value         Float
+  priorityOrder Int            @default(0)
+}
+
+model CategoryRule {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bucketId  String
+  bucket    Bucket   @relation(fields: [bucketId], references: [id], onDelete: Cascade)
+  keyword   String
+  createdAt DateTime @default(now())
+}
+
+model BalanceSnapshot {
+  id        String   @id @default(cuid())
+  accountId String
+  account   Account  @relation(fields: [accountId], references: [id], onDelete: Cascade)
+  date      DateTime
+  balance   Float
+}
