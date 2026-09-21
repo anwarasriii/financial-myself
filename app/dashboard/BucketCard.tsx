@@ -190,29 +190,36 @@ export function BucketCard({
           </div>
         )}
 
-        {!NON_TRANSACTION_KINDS.includes(bucket.kind) && bucket.transactions.length > 0 && (
-          <ul className="flex flex-col gap-1 border-t border-base-300 pt-3">
-            {bucket.transactions.map((txn) => (
-              <li key={txn.id} className="flex items-baseline justify-between gap-2 text-sm">
-                <span className="flex min-w-0 items-center gap-1">
-                  <span className="truncate">{txn.note || "—"}</span>
-                  <DeleteButton
-                    endpoint={`/api/transactions/${txn.id}`}
-                    confirmMessage="Delete this transaction?"
-                  />
-                </span>
-                <span className="flex shrink-0 items-center gap-2 text-xs text-base-content/60">
-                  <span>{new Date(txn.date).toLocaleDateString("en-MY", { day: "numeric", month: "short" })}</span>
-                  <span
-                    className={`tabular-nums ${txn.direction === "OUT" ? "text-error" : "text-success"}`}
-                  >
-                    {txn.direction === "OUT" ? "-" : "+"}
-                    {formatMoney(txn.amount)}
-                  </span>
-                </span>
-              </li>
-            ))}
-          </ul>
+        {!NON_TRANSACTION_KINDS.includes(bucket.kind) && (
+          <div className="flex flex-col gap-1 border-t border-base-300 pt-3">
+            <span className="text-xs font-medium text-base-content/50">This month</span>
+            {bucket.transactions.length > 0 ? (
+              <ul className="flex flex-col gap-1">
+                {bucket.transactions.map((txn) => (
+                  <li key={txn.id} className="flex items-baseline justify-between gap-2 text-sm">
+                    <span className="flex min-w-0 items-center gap-1">
+                      <span className="truncate">{txn.note || "—"}</span>
+                      <DeleteButton
+                        endpoint={`/api/transactions/${txn.id}`}
+                        confirmMessage="Delete this transaction?"
+                      />
+                    </span>
+                    <span className="flex shrink-0 items-center gap-2 text-xs text-base-content/60">
+                      <span>{new Date(txn.date).toLocaleDateString("en-MY", { day: "numeric", month: "short" })}</span>
+                      <span
+                        className={`tabular-nums ${txn.direction === "OUT" ? "text-error" : "text-success"}`}
+                      >
+                        {txn.direction === "OUT" ? "-" : "+"}
+                        {formatMoney(txn.amount)}
+                      </span>
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-sm text-base-content/50">No transactions yet this month.</p>
+            )}
+          </div>
         )}
       </div>
     </div>

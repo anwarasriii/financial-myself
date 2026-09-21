@@ -15,6 +15,10 @@ export default async function DashboardPage() {
   if (!session?.user?.id) redirect("/login");
   const userId = session.user.id;
 
+  const now = new Date();
+  const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+  const nextMonthStart = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+
   const [accounts, buckets, recentIncome, bucketBalances, accountBalances, suggestion] = await Promise.all([
     prisma.account.findMany({ where: { userId }, orderBy: { createdAt: "asc" } }),
     prisma.bucket.findMany({
@@ -23,7 +27,10 @@ export default async function DashboardPage() {
         sinkingFundItems: true,
         goals: { orderBy: { rank: "asc" } },
         recurringBills: { where: { active: true } },
-        transactions: { orderBy: { date: "desc" }, take: 10 },
+        transactions: {
+          where: { date: { gte: monthStart, lt: nextMonthStart } },
+          orderBy: { date: "desc" },
+        },
       },
       orderBy: { priority: "asc" },
     }),
@@ -51,6 +58,9 @@ export default async function DashboardPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <Link href="/dashboard/profile" className="btn btn-outline btn-sm">
+            Profile
+          </Link>
           <Link href="/dashboard/analytics" className="btn btn-outline btn-sm">
             Analytics
           </Link>

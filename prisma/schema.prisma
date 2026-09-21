@@ -32,6 +32,12 @@ enum TxnDirection {
   OUT
 }
 
+enum PetType {
+  DOG
+  CAT
+  CHICKEN
+}
+
 enum AllocationType {
   PERCENT
   FIXED
@@ -41,6 +47,10 @@ model User {
   id           String   @id @default(cuid())
   email        String   @unique
   name         String?
+  age          Int?
+  avatarUrl    String?
+  petType      PetType?
+  petName      String?
   passwordHash String
   createdAt    DateTime @default(now())
 
