@@ -2,6 +2,7 @@
 
 A self-hosted personal finance app for envelope-style budgeting: split your income across purpose-built "buckets" (bills, daily spending, emergency fund, sinking funds, goals, debt), track transactions against them, and import bank statements straight from a PDF.
 
+# Update & Fixed Bugs
 🐾 Profile & pet companion, plus a dashboard cleanup
 New
 
