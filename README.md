@@ -2,6 +2,16 @@
 
 A self-hosted personal finance app for envelope-style budgeting: split your income across purpose-built "buckets" (bills, daily spending, emergency fund, sinking funds, goals, debt), track transactions against them, and import bank statements straight from a PDF.
 
+# Update & Fixed Bugs
+🐾 Profile & pet companion, plus a dashboard cleanup
+New
+
+Profile page — set your name, age, and a profile picture.
+Pet companion — adopt a dog, cat, or chicken. Your pet's mood and progress bar reflect how close you are to your savings goals overall, so it grows happier the more you contribute.
+Fixed
+
+Dashboard bucket cards no longer show leftover transactions from last month once a new month starts — each bucket now lists only the current month's activity, with a clear "No transactions yet this month" state when it's empty.
+
 ## Features
 
 - **Buckets** — organize money into typed buckets (Daily Use, Bills, Entertainment, Emergency Fund, Sinking Fund, Goal, Debt, Other), each tied to an account and prioritized.
